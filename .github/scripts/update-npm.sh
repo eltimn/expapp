@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Install ncu
 npm i -g npm-check-updates
-pushd dependencies
+#pushd dependencies
 
 # Update all dependencies
 echo "Installing NPM dependencies..."
