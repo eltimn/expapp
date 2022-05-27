@@ -1,26 +1,21 @@
 name: Build Action
-on: [push]
+
+on:
+  workflow_call:
+
 jobs:
-  test:
+  build_docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-      - run: npm test
-
-  # build-and-push-to-gcr:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: nelonoel/branch-name@v1.0.1
-  #     - uses: google-github-actions/setup-gcloud@master
-  #     - uses: RafikFarhad/push-to-gcr-github-action@v4
-  #       with:
-  #         gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
-  #         registry: gcr.io
-  #         project_id: expapp-349719
-  #         image_name: expapp
-  #         image_tag: latest,${{ BRANCH_NAME }}
+      - name: Build Docker Image
+        run: |
+          echo "Ref Name: ${{ github.ref_name }}"
+      # - uses: nelonoel/branch-name@v1.0.1
+      # - uses: google-github-actions/setup-gcloud@master
+      # - uses: RafikFarhad/push-to-gcr-github-action@v4
+      #   with:
+      #     gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+      #     registry: gcr.io
+      #     project_id: expapp-349719
+      #     image_name: expapp
+      #     image_tag: latest,${{ BRANCH_NAME }}

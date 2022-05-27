@@ -7,3 +7,10 @@ https://github.com/marketplace/google-cloud-build
 
 * Cloud Build API
 * Artifact Registry API
+
+
+on:
+  workflow_dispatch:
+    # inputs:
+    #   environment:
+    #     description: 'Environment (review|production)'
