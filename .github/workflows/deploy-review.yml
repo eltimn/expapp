@@ -1,6 +1,10 @@
 name: Deploy to Review
 
 on:
+  workflow_dispatch:
+    # inputs:
+    #   environment:
+    #     description: 'Environment (review|production)'
   workflow_call:
 
 jobs:
@@ -22,7 +26,7 @@ jobs:
         with:
           step: start
           token: ${{ github.token }}
-          env: release
+          env: review
           payload: >-
             {
               "action": "${{ github.event.action }}",
