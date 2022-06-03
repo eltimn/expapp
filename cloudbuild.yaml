@@ -2,6 +2,9 @@ steps:
 # Build the container image
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME', '.' ]
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME']
 # Deploy container image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
