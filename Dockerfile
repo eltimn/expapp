@@ -1,5 +1,7 @@
 FROM node:16
 
+LABEL org.opencontainers.image.description DESCRIPTION
+
 # Create app directory
 WORKDIR /usr/src/app
 
