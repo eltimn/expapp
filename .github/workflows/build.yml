@@ -19,7 +19,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Build image and push to Docker Hub and GitHub Container Registry
+      - name: Build image and push to GitHub Container Registry
         uses: docker/build-push-action@v2
         with:
           push: true
@@ -27,7 +27,7 @@ jobs:
           # context: ./src/samples/simple
           # Note: tags has to be all lower-case
           tags: |
-            eltimn/expapp-image:latest
+            ghcr.io/eltimn/expapp-image:latest
           # build on feature branches, push only on main branch
 
       - name: Image digest
