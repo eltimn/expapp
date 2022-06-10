@@ -1,13 +1,63 @@
 steps:
-# Build the container image
-- name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME', '.' ]
-# Push the container image to Container Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME']
-# Deploy container image to Cloud Run
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args: ['run', 'deploy', 'expapp', '--image', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME', '--region', 'us-central1a']
-images:
-- 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME'
+  - id: "build image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}", "."]
+
+  - id: "push image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}"]
+
+  - id: "deploy prod service"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      [
+        "run",
+        "deploy",
+        "${_SERVICE_NAME}",
+        "--platform",
+        "managed",
+        "--region",
+        "${_REGION}",
+        "--allow-unauthenticated",
+        "--image",
+        "gcr.io/${PROJECT_ID}/${_SERVICE_NAME}",
+      ]
+
+  # Force the new revision to serve 100% of traffic.
+  - id: "ensure prod service live"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      [
+        "run",
+        "services",
+        "update-traffic",
+        "${_SERVICE_NAME}",
+        "--to-latest",
+        "--platform",
+        "managed",
+        "--region",
+        "${_REGION}",
+      ]
+
+substitutions:
+  _SERVICE_NAME: expapp
+  _REGION: us-central1
+
+
+
+
+# steps:
+# # Build the container image
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: [ 'build', '-t', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME', '.' ]
+# # Push the container image to Container Registry
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['push', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME']
+# # Deploy container image to Cloud Run
+# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#   entrypoint: gcloud
+#   args: ['run', 'deploy', 'expapp', '--image', 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME', '--region', 'us-central1a']
+# images:
+# - 'us-central1-docker.pkg.dev/expapp-349719/expapp-quickstart/expapp-image:$BRANCH_NAME'
