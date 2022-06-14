@@ -1,0 +1,3 @@
+config:
+  gcp:project: expapp-production
+  pulumi:template: gcp-javascript

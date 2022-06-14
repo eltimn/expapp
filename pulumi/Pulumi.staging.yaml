@@ -1,0 +1,3 @@
+config:
+  gcp:project: expapp-pulumi
+  pulumi:template: gcp-javascript
