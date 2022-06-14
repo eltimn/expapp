@@ -2,14 +2,7 @@ name: Deploy to Review
 
 on:
   workflow_dispatch:
-    # inputs:
-    #   environment:
-    #     description: 'Environment (review|production)'
   workflow_call:
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   deploy:
@@ -20,43 +13,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-      # - uses: rlespinasse/github-slug-action@3.1.0
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
 
-      - name: Echo meta outputs
-        run: |
-          echo "Tags: ${{ steps.meta.outputs.tags }}"
-
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
+      - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - run: npm install
         working-directory: ./pulumi
 
-      - uses: pulumi/actions@v3
+      - name: Install pulumi
+        uses: pulumi/setup-pulumi@v2
+        with:
+          pulumi-version: ^3.0.0
+
+      - name: Create stack
+        run: node create-stack.js
+        working-directory: ./pulumi/scripts
+        env:
+          PR_STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          # PULUMI_CI: pr
+
+      - name: Deploy stack
+        uses: pulumi/actions@v3
         with:
           command: up
-          stack-name: review
+          stack-name: "review-${{ steps.slugify.outputs.branch }}"
           work-dir: ./pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      # - id: 'auth'
-      #   uses: 'google-github-actions/auth@v0'
-      #   with:
-      #     # workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-      #     service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
 
       # - id: 'deploy'
       #   uses: 'google-github-actions/deploy-cloudrun@v0'
@@ -86,10 +80,10 @@ jobs:
       #         "label": "${{ env.GITHUB_HEAD_REF_SLUG_URL }}"
       #       }
 
-      - name: Echo inputs
-        run: |
-          echo "Ref Name: ${{ github.ref_name }}"
-          echo "Environment: ${{ github.event.inputs.environment }}"
+      # - name: Echo inputs
+      #   run: |
+      #     echo "Ref Name: ${{ github.ref_name }}"
+      #     echo "Environment: ${{ github.event.inputs.environment }}"
 
       # - name: update deployment status
       #   uses: bobheadxi/deployments@v1

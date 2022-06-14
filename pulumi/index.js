@@ -9,3 +9,4 @@ const bucket = new gcp.storage.Bucket("my-bucket", {
 
 // Export the DNS name of the bucket
 exports.bucketName = bucket.url;
+exports.readme = bucket.url;
