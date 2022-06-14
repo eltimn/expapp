@@ -13,8 +13,14 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
-      - name: Update Dependencies
+      - name: Update App Dependencies
         run: ./.github/scripts/update-npm.sh
+        env:
+          id: ${{ github.run_id }}
+          token: ${{ github.token }}
+      - name: Update Pulumi Dependencies
+        run: ./.github/scripts/update-npm.sh
+        working-directory: ./pulumi
         env:
           id: ${{ github.run_id }}
           token: ${{ github.token }}
