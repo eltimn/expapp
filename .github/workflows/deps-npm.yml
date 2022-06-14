@@ -1,14 +1,17 @@
 name: Update Deps - NPM
+
 on:
   schedule:
     # Sunday at 5:00pm
     - cron: "0 17 * * 0"
   workflow_dispatch:
+
 jobs:
   update:
     name: Update NPM Dependencies
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       pull-requests: write
     timeout-minutes: 30
     steps:
@@ -19,8 +22,13 @@ jobs:
           id: ${{ github.run_id }}
           token: ${{ github.token }}
       - name: Update Pulumi Dependencies
-        run: ./.github/scripts/update-npm.sh
+        run: ../.github/scripts/update-npm.sh
         working-directory: ./pulumi
+        env:
+          id: ${{ github.run_id }}
+          token: ${{ github.token }}
+      - name: Open PR
+        run: ./.github/scripts/open-pr.sh
         env:
           id: ${{ github.run_id }}
           token: ${{ github.token }}

@@ -1,0 +1,55 @@
+name: PR Merged
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  destroy:
+    name: Destroy Pulumi Stack and Resources
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - run: npm install
+        working-directory: ./pulumi
+
+      - uses: pulumi/actions@v3
+        with:
+          command: destroy
+          stack-name: review
+          work-dir: ./pulumi
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      # - name: Install infra dependencies
+      #   run: cd infra && npm ci
+
+      # - name: Inject slug/short variables
+      #   uses: rlespinasse/github-slug-action@v2.x
+
+      # - name: Create PR_STACK_NAME env variable
+      #   run: echo "PR_STACK_NAME=$(echo $GITHUB_BASE_REF_SLUG | cut -c 1-3)-$(echo $GITHUB_HEAD_REF_SLUG | cut -c 1-15 | sed 's:-*$::')" >> $GITHUB_ENV
+
+      # - name: Destroy the PR stack and resources
+      #   run: cd infra/automation && node index.js destroy
+      #   env:
+      #     PR_STACK_NAME: ${{ env.PR_STACK_NAME }}
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}
+      #     MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY }}
+      #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      #     PULUMI_ROOT: infra
+      #     PULUMI_CI: pr
