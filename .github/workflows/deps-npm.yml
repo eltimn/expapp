@@ -24,3 +24,8 @@ jobs:
         env:
           id: ${{ github.run_id }}
           token: ${{ github.token }}
+      - name: Update App Dependencies
+        run: ./.github/scripts/open-pr.sh
+        env:
+          id: ${{ github.run_id }}
+          token: ${{ github.token }}
