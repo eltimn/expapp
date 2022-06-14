@@ -12,9 +12,11 @@ if [[ $(git status --porcelain) ]]; then
   echo "Pushing changes to remote..."
   git add .
   git commit -a -m "Update NPM dependencies"
+  echo "Create new branch"
   # shellcheck disable=SC2154
   git checkout -b "npm_deps_${id}"
   # shellcheck disable=SC2154
+  echo "Push new branch"
   git push origin "npm_deps_${id}"
 
   # Open pull request
