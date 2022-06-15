@@ -4,6 +4,9 @@ on:
   pull_request:
     types: [closed]
 
+env:
+  PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
 jobs:
   destroy:
     name: Destroy Pulumi Stack and Resources
@@ -32,12 +35,13 @@ jobs:
           command: destroy
           stack-name: "review-${{ steps.slugify.outputs.branch }}"
           work-dir: ./pulumi
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      - name: Remove stack
-        run: node remove-stack.js
-        working-directory: ./pulumi/scripts
-        env:
-          PR_STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      - run: pulumi stack rm "review-${{ steps.slugify.outputs.branch }}" --yes
+        working-directory: ./pulumi
+
+      # - name: Remove stack
+      #   run: node remove-stack.js
+      #   working-directory: ./pulumi/scripts
+      #   env:
+      #     PR_STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
+      #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
