@@ -4,62 +4,44 @@ on:
   workflow_dispatch:
   workflow_call:
 
+# env:
+#   REGISTRY: ghcr.io
+#   IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   deploy:
     permissions:
-      deployments: write
+      # deployments: write
       contents: 'read'
-      id-token: 'write'
+      # id-token: 'write'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - id: slugify
-        uses: eltimn/slugify-action@v1.5
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
 
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
       - run: npm install
         working-directory: ./pulumi
 
-      - name: Install pulumi
-        uses: pulumi/setup-pulumi@v2
-        with:
-          pulumi-version: ^3.0.0
-
-      - name: Create stack
-        run: node create-stack.js
-        working-directory: ./pulumi/scripts
-        env:
-          PR_STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-
-      - name: Deploy stack
-        uses: pulumi/actions@v3
+      - uses: pulumi/actions@v3
         with:
           command: up
-          stack-name: "review-${{ steps.slugify.outputs.branch }}"
+          stack-name: staging
           work-dir: ./pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-
 
       # - id: 'deploy'
       #   uses: 'google-github-actions/deploy-cloudrun@v0'
       #   with:
       #     service: 'hello-cloud-run'
       #     image: 'gcr.io/cloudrun/hello'
-
-      # - name: 'Use output'
-      #   run: 'curl "${{ steps.deploy.outputs.url }}"'
-
 
       # - name: Set domain
       #   id: set-domain
