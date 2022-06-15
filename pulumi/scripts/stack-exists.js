@@ -8,7 +8,9 @@ async function run() {
     workDir: path.join(__dirname, "../") // the directory where our Pulumi.yaml exists
   });
 
-  workspace.listStacks().array.forEach(stack => {
+  const stacks = await workspace.listStacks()
+
+  stacks.forEach(stack => {
     console.log(stack)
   });
 }
