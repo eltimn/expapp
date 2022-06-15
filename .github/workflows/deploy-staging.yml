@@ -1,4 +1,4 @@
-name: Deploy to Review
+name: Deploy to Staging
 
 on:
   workflow_dispatch:
