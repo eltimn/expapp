@@ -13,6 +13,7 @@ jobs:
     name: Destroy Pulumi Stack and Resources
     # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    environment: review
     steps:
       - uses: actions/checkout@v2
 
@@ -72,7 +73,7 @@ jobs:
       - name: Delete image
         uses: bots-house/ghcr-delete-image-action@v1.0.0
         with:
-          owner: eltimn
+          owner: ${{ github.repository_owner }}
           name: expapp
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.slugify.outputs.branch }}
