@@ -5,12 +5,18 @@ on:
     branches:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   test:
     uses: ./.github/workflows/test.yml
 
   build:
     uses: ./.github/workflows/build.yml
+    with:
+      tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
 
   preview:
     name: Preview staging
