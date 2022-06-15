@@ -25,6 +25,9 @@ jobs:
         with:
           node-version: 16
 
+      - run: npm install
+        working-directory: ./pulumi
+
       - name: Install pulumi
         uses: pulumi/setup-pulumi@v2
         with:
