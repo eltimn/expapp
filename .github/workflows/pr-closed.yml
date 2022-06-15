@@ -65,4 +65,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Remove docker images
-        run: docker image rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+        run: docker image rm ${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
