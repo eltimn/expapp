@@ -1,4 +1,4 @@
-name: PR Closed
+name: Pull Request Closed
 
 on:
   pull_request:
@@ -33,19 +33,31 @@ jobs:
       - run: npm install
         working-directory: ./pulumi
 
-      - uses: pulumi/actions@v3
-        continue-on-error: true
+      - name: Install pulumi
+        uses: pulumi/setup-pulumi@v2
         with:
-          command: destroy
-          stack-name: "review-${{ steps.slugify.outputs.branch }}"
-          work-dir: ./pulumi
+          pulumi-version: ^3.0.0
+
+      - name: Check stack exists
+        run: node stack-exists.js
+        working-directory: ./pulumi/scripts
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      - run: pulumi stack rm "review-${{ steps.slugify.outputs.branch }}" --yes
-        working-directory: ./pulumi
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+      # - uses: pulumi/actions@v3
+      #   continue-on-error: true
+      #   with:
+      #     command: destroy
+      #     stack-name: "review-${{ steps.slugify.outputs.branch }}"
+      #     work-dir: ./pulumi
+      #   env:
+      #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      # - run: pulumi stack rm "review-${{ steps.slugify.outputs.branch }}" --yes
+      #   continue-on-error: true
+      #   working-directory: ./pulumi
+      #   env:
+      #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
   # cleanup:
   #   name: Cleanup docker images
