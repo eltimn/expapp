@@ -1,6 +1,6 @@
 FROM node:16
 
-LABEL org.opencontainers.image.description DESCRIPTION
+LABEL org.opencontainers.image.description "Express App"
 
 # Create app directory
 WORKDIR /usr/src/app

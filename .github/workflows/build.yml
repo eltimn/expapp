@@ -9,12 +9,16 @@ env:
 
 jobs:
   build_docker:
+    name: Build docker image and push to GHCR
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v3
+
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
 
       - name: Set up Docker Buildx
         id: buildx
@@ -27,43 +31,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      # - name: Build image and push to GitHub Container Registry
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     push: true
-      #     # relative path to the place where source code with Dockerfile is located
-      #     # context: ./src/samples/simple
-      #     # Note: tags has to be all lower-case
-      #     tags: |
-      #       ghcr.io/eltimn/expapp-image:latest
-      #     # build on feature branches, push only on main branch
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-
-      # - name: Build Docker Image
-      #   run: |
-      #     echo "Ref Name: ${{ github.ref_name }}"
-      # - uses: nelonoel/branch-name@v1.0.1
-      # - uses: google-github-actions/setup-gcloud@master
-      # - uses: RafikFarhad/push-to-gcr-github-action@v4
-      #   with:
-      #     gcloud_service_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
-      #     registry: gcr.io
-      #     project_id: expapp-349719
-      #     image_name: expapp
-      #     image_tag: latest,${{ BRANCH_NAME }}

@@ -1,23 +1,23 @@
-name: Pull Request
+name: PR Closed
 
 on:
   pull_request:
-    branches:
-      - main
+    types: [closed]
+
+env:
+  PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
 jobs:
-  test:
-    uses: ./.github/workflows/test.yml
-
-  build:
-    uses: ./.github/workflows/build.yml
-
-  preview:
-    name: Preview staging
-    needs: build
+  destroy:
+    name: Destroy Pulumi Stack and Resources
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
+
       - uses: actions/setup-node@v2
         with:
           node-version: 16
@@ -32,8 +32,9 @@ jobs:
 
       - uses: pulumi/actions@v3
         with:
-          command: preview
-          stack-name: staging
+          command: destroy
+          stack-name: "review-${{ steps.slugify.outputs.branch }}"
           work-dir: ./pulumi
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - run: pulumi stack rm "review-${{ steps.slugify.outputs.branch }}" --yes
+        working-directory: ./pulumi
