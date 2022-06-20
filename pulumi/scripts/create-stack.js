@@ -34,8 +34,8 @@ async function run() {
 
   // set config
   await stack.setConfig("gcp:region", { value: gcpRegion });
-  await stack.setConfig("git:branch", { value: gitBranch });
-  await stack.setConfig("git:sha", { value: gitSha });
+  await stack.setConfig("git_branch", { value: gitBranch });
+  await stack.setConfig("git_sha", { value: gitSha });
 
   const allConfig = await stack.getAllConfig()
   console.log("stack allConfig:", allConfig)
