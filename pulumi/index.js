@@ -4,9 +4,7 @@
 const gcp = require("@pulumi/gcp");
 
 // Location to deploy Cloud Run services
-const region = gcp.config.region || "us-central1";
-
-console.log("region:", region)
+const region = gcp.config.region //|| "us-central1";
 
 // const expService = new gcp.cloudrun.Service("expapp", {
 //   location,
@@ -27,3 +25,4 @@ const bucket = new gcp.storage.Bucket("my-bucket", {
 // Export the DNS name of the bucket
 exports.bucketName = bucket.url;
 exports.readme = bucket.url;
+exports.region = region;
