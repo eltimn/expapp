@@ -37,8 +37,8 @@ const location = config.require("gcp_location");
 // });
 
 // Exports
-exports.readme = appService.status.url;
-exports.url = appService.status.url;
+// exports.readme = appService.status.url;
+// exports.url = appService.status.url;
 exports.image_uri = image_uri;
 exports.location = location;
 // exports.region = region;
