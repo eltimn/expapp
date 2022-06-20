@@ -4,13 +4,13 @@ on:
   workflow_call:
 
 env:
-  REGISTRY: us-central1-docker.pkg.dev
+  REGISTRY: us-docker.pkg.dev/expapp-pulumi/expapp
   # REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build_docker:
-    name: Build docker image and push to GHCR
+    name: Build docker image and push to GAR
     runs-on: ubuntu-latest
     permissions:
       contents: read
