@@ -5,8 +5,10 @@ on:
   workflow_call:
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: us-docker.pkg.dev/expapp-pulumi/expapp
+  IMAGE_NAME: expapp
+  # REGISTRY: ghcr.io
+  # IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   deploy:
