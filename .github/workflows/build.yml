@@ -5,8 +5,9 @@ on:
 
 env:
   REGISTRY: us-docker.pkg.dev/expapp-pulumi/expapp
+  IMAGE_NAME: expapp
   # REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  # IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build_docker:
