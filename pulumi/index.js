@@ -3,12 +3,13 @@
 const pulumi = require("@pulumi/pulumi");
 const gcp = require("@pulumi/gcp");
 
-const config = new pulumi.Config()
+// required config values
+const config = new pulumi.Config();
+const branch = config.require("git_branch");
+const sha = config.require("git_sha");
 
 // Location to deploy Cloud Run services
-const region = gcp.config.region; //|| "us-central1";
-const branch = config.require("git_branch");
-// const sha = git.config.git_sha;
+const region = gcp.config.region || "us-central1";
 
 // const expService = new gcp.cloudrun.Service("expapp", {
 //   location,
@@ -31,5 +32,4 @@ exports.bucketName = bucket.url;
 exports.readme = bucket.url;
 exports.region = region;
 exports.branch = branch;
-// exports.sha = sha;
-exports.pul_config = config;
+exports.sha = sha;

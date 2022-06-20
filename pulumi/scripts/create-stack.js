@@ -5,9 +5,10 @@ const { LocalWorkspace } = require("@pulumi/pulumi/automation");
 
 async function run() {
   const stackPrefix = process.env.STACK_PREFIX
+  const gcpRegion = process.env.GCP_REGION
   const gitBranch = process.env.GIT_BRANCH
   const gitSha = process.env.GIT_SHA
-  const gcpRegion = process.env.GCP_REGION
+  const imageName = process.env.IMAGE_NAME
 
   const stackArgs = {
     stackName: `${stackPrefix}-${gitBranch}`,
@@ -29,16 +30,14 @@ async function run() {
     `Setting ${stackArgs.stackName} stack config from review stack`,
   );
   const reviewAllConfig = await reviewStack.getAllConfig()
-  console.log("review reviewAllConfig:", reviewAllConfig)
+  // console.log("review reviewAllConfig:", reviewAllConfig)
   await stack.setAllConfig(reviewAllConfig);
 
   // set config
   await stack.setConfig("gcp:region", { value: gcpRegion });
   await stack.setConfig("git_branch", { value: gitBranch });
   await stack.setConfig("git_sha", { value: gitSha });
-
-  const allConfig = await stack.getAllConfig()
-  console.log("stack allConfig:", allConfig)
+  await stack.setConfig("image_name", { value: imageName })
 }
 
 run().catch(function onRunError(error) {
