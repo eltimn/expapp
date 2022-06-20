@@ -4,7 +4,9 @@
 const gcp = require("@pulumi/gcp");
 
 // Location to deploy Cloud Run services
-const region = gcp.config.region //|| "us-central1";
+const region = gcp.config.region; //|| "us-central1";
+const branch = git.config.git_branch;
+const sha = git.config.git_sha;
 
 // const expService = new gcp.cloudrun.Service("expapp", {
 //   location,
@@ -26,3 +28,5 @@ const bucket = new gcp.storage.Bucket("my-bucket", {
 exports.bucketName = bucket.url;
 exports.readme = bucket.url;
 exports.region = region;
+exports.branch = branch;
+exports.sha = sha;

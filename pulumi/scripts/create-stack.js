@@ -4,13 +4,18 @@ const path = require("path");
 const { LocalWorkspace } = require("@pulumi/pulumi/automation");
 
 async function run() {
+  const stackPrefix = process.env.STACK_PREFIX
+  const gitBranch = process.env.GIT_BRANCH
+  const gitSha = process.env.GIT_SHA
+  const gcpRegion = process.env.GCP_REGION
+
   const stackArgs = {
-    stackName: process.env.PR_STACK_NAME, // the PR stackname
+    stackName: `${stackPrefix}-${gitBranch}`,
     workDir: path.join(__dirname, "../"), // the directory where our Pulumi.yaml exists
   };
 
   // select `review` stack
-  const reviewWorkspace = await LocalWorkspace.selectStack({
+  const reviewStack = await LocalWorkspace.selectStack({
     stackName: "review",
     workDir: stackArgs.workDir,
   });
@@ -23,11 +28,17 @@ async function run() {
   console.log(
     `Setting ${stackArgs.stackName} stack config from review stack`,
   );
-  const allConfig = await reviewWorkspace.getAllConfig()
-  console.log("allConfig:", allConfig)
-  await stack.setAllConfig(allConfig);
-  // change gcp:region config value to be different than the review config
-  await stack.setConfig("gcp:region", { value: "us-central1" });
+  const reviewAllConfig = await reviewStack.getAllConfig()
+  console.log("review reviewAllConfig:", reviewAllConfig)
+  await stack.setAllConfig(reviewAllConfig);
+
+  // set config
+  await stack.setConfig("gcp:region", { value: gcpRegion });
+  await stack.setConfig("git:branch", { value: gitBranch });
+  await stack.setConfig("git:sha", { value: gitSha });
+
+  const allConfig = await stack.getAllConfig()
+  console.log("stack allConfig:", allConfig)
 }
 
 run().catch(function onRunError(error) {
