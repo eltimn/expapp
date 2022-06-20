@@ -4,6 +4,7 @@ const path = require("path");
 const { LocalWorkspace } = require("@pulumi/pulumi/automation");
 
 async function run() {
+  const stackName = process.env.PR_STACK_NAME // the PR stackname
   const workspace = await LocalWorkspace.create({
     workDir: path.join(__dirname, "../") // the directory where our Pulumi.yaml exists
   });
@@ -13,6 +14,10 @@ async function run() {
   stacks.forEach(stack => {
     console.log(stack)
   });
+
+  const filtered = stacks.filter(s => s.name === stackName)
+
+  console.log("filtered:", filtered)
 }
 
 run().catch(function onRunError(error) {
