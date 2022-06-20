@@ -37,7 +37,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: _json_key
-          password: ${{ secrets.GOOGLE_CREDENTIALS }}
+          password: ${{ secrets.GCR_JSON_KEY }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
