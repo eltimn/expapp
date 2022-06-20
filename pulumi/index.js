@@ -5,31 +5,42 @@ const gcp = require("@pulumi/gcp");
 
 // required config values
 const config = new pulumi.Config();
-const branch = config.require("git_branch");
-const sha = config.require("git_sha");
+// const branch = config.require("git_branch");
+// const sha = config.require("git_sha");
+const image_name = config.require("image_name");
+const location = config.require("gcp_location");
 
 // Location to deploy Cloud Run services
-const region = gcp.config.region || "us-central1";
+// const region = gcp.config.region || "us-central1";
 
-// const expService = new gcp.cloudrun.Service("expapp", {
-//   location,
-//   template: {
-//       spec: {
-//           containers: [
-//               { image: "gcr.io/cloudrun/hello" },
-//           ],
-//       },
-//   },
-// });
-
-// Create a GCP resource (Storage Bucket)
-const bucket = new gcp.storage.Bucket("my-bucket", {
-    location: "US"
+const appService = new gcp.cloudrun.Service("expapp", {
+  location,
+  template: {
+    spec: {
+      containers: [
+        { image: image_name }
+      ]
+    }
+  }
 });
 
-// Export the DNS name of the bucket
-exports.bucketName = bucket.url;
-exports.readme = bucket.url;
-exports.region = region;
-exports.branch = branch;
-exports.sha = sha;
+const appIam = new gcp.cloudrun.IamMember("expapp-everyone", {
+  service: appService.name,
+  location,
+  role: "roles/run.invoker",
+  member: "allUsers"
+});
+
+// Create a GCP resource (Storage Bucket)
+// const bucket = new gcp.storage.Bucket("my-bucket", {
+//     location: "US"
+// });
+
+// Exports
+exports.readme = appService.status.url;
+exports.url = appService.status.url;
+exports.image_name = image_name;
+exports.location = location;
+// exports.region = region;
+// exports.branch = branch;
+// exports.sha = sha;

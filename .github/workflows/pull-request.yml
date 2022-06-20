@@ -17,32 +17,32 @@ jobs:
     secrets:
       GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
 
-  stack_exists:
-    runs-on: ubuntu-latest
-    environment: review
-    steps:
-      - uses: actions/checkout@v2
+  # stack_exists:
+  #   runs-on: ubuntu-latest
+  #   environment: review
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - id: slugify
-        uses: eltimn/slugify-action@v1.5
+  #     - id: slugify
+  #       uses: eltimn/slugify-action@v1.5
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
 
-      - run: npm install
-        working-directory: ./pulumi
+  #     - run: npm install
+  #       working-directory: ./pulumi
 
-      - name: Install pulumi
-        uses: pulumi/setup-pulumi@v2
-        with:
-          pulumi-version: ^3.0.0
+  #     - name: Install pulumi
+  #       uses: pulumi/setup-pulumi@v2
+  #       with:
+  #         pulumi-version: ^3.0.0
 
-      - name: Check stack exists
-        run: node stack-exists.js
-        working-directory: ./pulumi/scripts
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  #     - name: Check stack exists
+  #       run: node stack-exists.js
+  #       working-directory: ./pulumi/scripts
+  #       env:
+  #         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
   # preview:
   #   name: Preview staging

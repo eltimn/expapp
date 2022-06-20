@@ -45,10 +45,11 @@ jobs:
         run: node create-stack.js
         working-directory: ./pulumi/scripts
         env:
-          STACK_PREFIX: "review"
-          GCP_REGION: "us-west1"
-          GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
-          GIT_SHA: ${{ steps.slugify.outputs.sha }}
+          STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
+          GCP_LOCATION: "us"
+          # GCP_REGION: "us-west1"
+          # GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
+          # GIT_SHA: ${{ steps.slugify.outputs.sha }}
           IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 

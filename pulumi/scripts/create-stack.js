@@ -4,14 +4,14 @@ const path = require("path");
 const { LocalWorkspace } = require("@pulumi/pulumi/automation");
 
 async function run() {
-  const stackPrefix = process.env.STACK_PREFIX
-  const gcpRegion = process.env.GCP_REGION
-  const gitBranch = process.env.GIT_BRANCH
-  const gitSha = process.env.GIT_SHA
+  const gcpLocation = process.env.GCP_LOCATION
+  // const gcpRegion = process.env.GCP_REGION
+  // const gitBranch = process.env.GIT_BRANCH
+  // const gitSha = process.env.GIT_SHA
   const imageName = process.env.IMAGE_NAME
 
   const stackArgs = {
-    stackName: `${stackPrefix}-${gitBranch}`,
+    stackName: process.env.STACK_NAME,
     workDir: path.join(__dirname, "../"), // the directory where our Pulumi.yaml exists
   };
 
@@ -34,10 +34,11 @@ async function run() {
   await stack.setAllConfig(reviewAllConfig);
 
   // set config
-  await stack.setConfig("gcp:region", { value: gcpRegion });
-  await stack.setConfig("git_branch", { value: gitBranch });
-  await stack.setConfig("git_sha", { value: gitSha });
+  // await stack.setConfig("gcp:region", { value: gcpRegion });
+  // await stack.setConfig("git_branch", { value: gitBranch });
+  // await stack.setConfig("git_sha", { value: gitSha });
   await stack.setConfig("image_name", { value: imageName })
+  await stack.setConfig("gcp_location", { value: gcpLocation })
 }
 
 run().catch(function onRunError(error) {
