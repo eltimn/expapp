@@ -11,7 +11,11 @@ jobs:
 
   build:
     uses: ./.github/workflows/build.yml
-    secrets: inherit
+    with:
+      registry: us-docker.pkg.dev/expapp-pulumi/expapp
+      image_name: expapp
+    secrets:
+      GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
 
   stack_exists:
     runs-on: ubuntu-latest
