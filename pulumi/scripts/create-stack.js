@@ -8,7 +8,7 @@ async function run() {
   // const gcpRegion = process.env.GCP_REGION
   // const gitBranch = process.env.GIT_BRANCH
   // const gitSha = process.env.GIT_SHA
-  const imageName = process.env.IMAGE_NAME
+  const imageUri = process.env.IMAGE_URI
 
   const stackArgs = {
     stackName: process.env.STACK_NAME,
@@ -37,7 +37,7 @@ async function run() {
   // await stack.setConfig("gcp:region", { value: gcpRegion });
   // await stack.setConfig("git_branch", { value: gitBranch });
   // await stack.setConfig("git_sha", { value: gitSha });
-  await stack.setConfig("image_name", { value: imageName })
+  await stack.setConfig("image_uri", { value: imageUri })
   await stack.setConfig("gcp_location", { value: gcpLocation })
 }
 

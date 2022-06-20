@@ -50,7 +50,7 @@ jobs:
           # GCP_REGION: "us-west1"
           # GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
           # GIT_SHA: ${{ steps.slugify.outputs.sha }}
-          IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+          IMAGE_URI: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Deploy stack
