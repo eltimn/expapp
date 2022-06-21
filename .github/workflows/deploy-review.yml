@@ -53,24 +53,24 @@ jobs:
           IMAGE_URI: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      - name: Deploy stack
-        uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: "review-${{ steps.slugify.outputs.branch }}"
-          work-dir: ./pulumi
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-
-
-      # - id: 'deploy'
-      #   uses: 'google-github-actions/deploy-cloudrun@v0'
+      # - name: Deploy stack
+      #   uses: pulumi/actions@v3
       #   with:
-      #     service: 'hello-cloud-run'
-      #     image: 'gcr.io/cloudrun/hello'
+      #     command: up
+      #     stack-name: "review-${{ steps.slugify.outputs.branch }}"
+      #     work-dir: ./pulumi
+      #   env:
+      #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      # - name: 'Use output'
-      #   run: 'curl "${{ steps.deploy.outputs.url }}"'
+
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          service: 'expapp'
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
 
 
       # - name: Set domain
