@@ -62,24 +62,34 @@ jobs:
       #   env:
       #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-cloudrun@v0'
+        with:
+          service: 'expapp-${{ steps.slugify.outputs.branch }}'
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+
+
       - name: 'Setup gcloud SDK'
         uses: google-github-actions/setup-gcloud@v0
 
-      - name: 'Deploy to Cloud Run'
-        id: deploy
+      - name: 'Allow public access'
         run: |-
-          gcloud run deploy expapp-${{ steps.slugify.outputs.branch }} \
-            --region us-central1 \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }} \
-            --platform managed \
-            --allow-unauthenticated \
-            --quiet
+          gcloud beta run services add-iam-policy-binding \
+            --region=us-central1 \
+            --member=allUsers \
+            --role=roles/run.invoker \
+            expapp-${{ steps.slugify.outputs.branch }}
 
-      # - id: 'deploy'
-      #   uses: 'google-github-actions/deploy-cloudrun@v0'
-      #   with:
-      #     service: 'expapp'
-      #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+      # - name: 'Deploy to Cloud Run'
+      #   id: deploy
+      #   run: |-
+      #     gcloud run deploy expapp-${{ steps.slugify.outputs.branch }} \
+      #       --region us-central1 \
+      #       --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }} \
+      #       --platform managed \
+      #       --allow-unauthenticated \
+      #       --quiet
+
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'

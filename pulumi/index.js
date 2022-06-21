@@ -14,7 +14,7 @@ const location = config.require("gcp_location");
 // const region = gcp.config.region || "us-central1";
 
 const appService = new gcp.cloudrun.Service("expapp", {
-  location,
+  location: "us-central1",
   template: {
     spec: {
       containers: [
@@ -26,7 +26,7 @@ const appService = new gcp.cloudrun.Service("expapp", {
 
 const appIam = new gcp.cloudrun.IamMember("expapp-everyone", {
   service: appService.name,
-  location,
+  location: "us-central1",
   role: "roles/run.invoker",
   member: "allUsers"
 });
