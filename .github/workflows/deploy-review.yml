@@ -62,12 +62,24 @@ jobs:
       #   env:
       #     PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
+      - name: 'Setup gcloud SDK'
+        uses: google-github-actions/setup-gcloud@v0
 
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v0'
-        with:
-          service: 'expapp'
-          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+      - name: 'Deploy to Cloud Run'
+        id: deploy
+        run: |-
+          gcloud run deploy expapp-${{ steps.slugify.outputs.branch }} \
+            --region us-central1 \
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --quiet
+
+      # - id: 'deploy'
+      #   uses: 'google-github-actions/deploy-cloudrun@v0'
+      #   with:
+      #     service: 'expapp'
+      #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
 
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
