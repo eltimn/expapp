@@ -53,24 +53,6 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      # - id: 'deploy'
-      #   uses: 'google-github-actions/deploy-cloudrun@v0'
-      #   with:
-      #     service: 'hello-cloud-run'
-      #     image: 'gcr.io/cloudrun/hello'
-
-      # - name: Set domain
-      #   id: set-domain
-      #   run: |
-      #     echo "::set-output name=domain::${{ env.GITHUB_HEAD_REF_SLUG_URL }}.my-app.com"
-
-
-
-      # - name: Echo inputs
-      #   run: |
-      #     echo "Ref Name: ${{ github.ref_name }}"
-      #     echo "Environment: ${{ github.event.inputs.environment }}"
-
       - name: Update deployment status
         uses: bobheadxi/deployments@v1
         if: always()

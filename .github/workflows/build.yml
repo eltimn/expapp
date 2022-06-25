@@ -9,6 +9,9 @@ on:
       image_name:
         required: true
         type: string
+      tag:
+        required: true
+        type: string
     secrets:
       GAR_JSON_KEY:
         required: true
@@ -26,9 +29,6 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v3
-
-      - id: slugify
-        uses: eltimn/slugify-action@v1.5
 
       - name: Set up Docker Buildx
         id: buildx
@@ -53,7 +53,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ inputs.registry }}/${{ inputs.image_name }}:${{ steps.slugify.outputs.branch }}
+          tags:
+            - ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.tag }}
+            - ${{ inputs.registry }}/${{ inputs.image_name }}:latest
 
       # - name: Image digest
       #   run: echo ${{ steps.docker_build.outputs.digest }}
