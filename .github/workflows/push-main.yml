@@ -10,6 +10,11 @@ jobs:
 
   build:
     uses: ./.github/workflows/build.yml
+    with:
+      registry: us-docker.pkg.dev/expapp-pulumi/expapp
+      image_name: expapp
+    secrets:
+      GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
 
   deploy_staging:
     uses: ./.github/workflows/deploy-staging.yml

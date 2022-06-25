@@ -42,6 +42,7 @@ jobs:
         run: node stack-exists.js
         working-directory: ./pulumi/scripts
         env:
+          STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - uses: pulumi/actions@v3

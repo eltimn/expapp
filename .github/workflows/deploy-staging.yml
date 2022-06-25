@@ -30,7 +30,22 @@ jobs:
       - run: npm install
         working-directory: ./pulumi
 
-      - uses: pulumi/actions@v3
+      - name: Start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ github.token }}
+          env: review
+          payload: >-
+            {
+              "action": "${{ github.event.action }}",
+              "label": "${{ steps.slugify.outputs.branch }}"
+            }
+
+      - name: Deploy stack
+        id: 'deploy'
+        uses: pulumi/actions@v3
         with:
           command: up
           stack-name: staging
@@ -49,31 +64,20 @@ jobs:
       #   run: |
       #     echo "::set-output name=domain::${{ env.GITHUB_HEAD_REF_SLUG_URL }}.my-app.com"
 
-      # - name: start deployment
-      #   uses: bobheadxi/deployments@v1
-      #   id: deployment
-      #   with:
-      #     step: start
-      #     token: ${{ github.token }}
-      #     env: review
-      #     payload: >-
-      #       {
-      #         "action": "${{ github.event.action }}",
-      #         "label": "${{ env.GITHUB_HEAD_REF_SLUG_URL }}"
-      #       }
+
 
       # - name: Echo inputs
       #   run: |
       #     echo "Ref Name: ${{ github.ref_name }}"
       #     echo "Environment: ${{ github.event.inputs.environment }}"
 
-      # - name: update deployment status
-      #   uses: bobheadxi/deployments@v1
-      #   if: always()
-      #   with:
-      #     step: finish
-      #     token: ${{ github.token }}
-      #     status: ${{ job.status }}
-      #     env: ${{ steps.deployment.outputs.env }}
-      #     deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      #     env_url: https://${{ steps.set-domain.outputs.domain }}
+      - name: Update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ github.token }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ steps.deploy.outputs.url }}
