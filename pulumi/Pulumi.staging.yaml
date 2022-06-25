@@ -2,3 +2,4 @@ config:
   gcp:project: expapp-pulumi
   gcp:region: us-central1
   pulumi:template: gcp-javascript
+  expapp:image_uri: us-docker.pkg.dev/expapp-pulumi/expapp/expapp:main
