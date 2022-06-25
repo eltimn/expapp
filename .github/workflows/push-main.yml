@@ -19,3 +19,6 @@ jobs:
   deploy_staging:
     uses: ./.github/workflows/deploy-staging.yml
     needs: build
+    secrets:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+      PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
