@@ -3,44 +3,55 @@
 const pulumi = require("@pulumi/pulumi");
 const gcp = require("@pulumi/gcp");
 
-// required config values
+// // required config values
 const config = new pulumi.Config();
-// const branch = config.require("git_branch");
-// const sha = config.require("git_sha");
+// // const branch = config.require("git_branch");
+// // const sha = config.require("git_sha");
 const image_uri = config.require("image_uri");
-const location = config.require("gcp_location");
+// const location = config.require("gcp_location");
 
 // Location to deploy Cloud Run services
-// const region = gcp.config.region || "us-central1";
+const region = gcp.config.region || "us-central1";
 
 const appService = new gcp.cloudrun.Service("expapp", {
-  location: "us-central1",
+  location: region,
   template: {
     spec: {
-      containers: [
-        { image: image_uri }
-      ]
+      containers: [{
+        image: image_uri,
+        ports: [{ containerPort: 8080 }],
+        resources: {
+          limits: {
+            cpu: '1000m',
+            memory: '256Mi',
+          },
+        }
+      }]
     }
-  }
+  },
+  traffics: [{ percent: 100, latestRevision: true }],
 });
 
-const appIam = new gcp.cloudrun.IamMember("expapp-everyone", {
+// allow all users accesss to service
+new gcp.cloudrun.IamMember("expapp-all-users", {
   service: appService.name,
-  location: "us-central1",
+  location: appService.location,
   role: "roles/run.invoker",
   member: "allUsers"
 });
 
-// Create a GCP resource (Storage Bucket)
-// const bucket = new gcp.storage.Bucket("my-bucket", {
-//     location: "US"
-// });
+// appService.statuses[0].url.apply(v => console.log('url:', v))
 
-// Exports
-exports.readme = appService.status.url;
-exports.url = appService.status.url;
+// // Create a GCP resource (Storage Bucket)
+// // const bucket = new gcp.storage.Bucket("my-bucket", {
+// //     location: "US"
+// // });
+
+// // Exports
+// exports.readme = appService.status.url;
+exports.url = appService.statuses[0].url;
 exports.image_uri = image_uri;
-exports.location = location;
-// exports.region = region;
-// exports.branch = branch;
-// exports.sha = sha;
+exports.region = region;
+// // exports.region = region;
+// // exports.branch = branch;
+// // exports.sha = sha;

@@ -4,8 +4,8 @@ const path = require("path");
 const { LocalWorkspace } = require("@pulumi/pulumi/automation");
 
 async function run() {
-  const gcpLocation = process.env.GCP_LOCATION
-  // const gcpRegion = process.env.GCP_REGION
+  // const gcpLocation = process.env.GCP_LOCATION
+  const gcpRegion = process.env.GCP_REGION
   // const gitBranch = process.env.GIT_BRANCH
   // const gitSha = process.env.GIT_SHA
   const imageUri = process.env.IMAGE_URI
@@ -34,11 +34,11 @@ async function run() {
   await stack.setAllConfig(reviewAllConfig);
 
   // set config
-  // await stack.setConfig("gcp:region", { value: gcpRegion });
+  await stack.setConfig("gcp:region", { value: gcpRegion });
   // await stack.setConfig("git_branch", { value: gitBranch });
   // await stack.setConfig("git_sha", { value: gitSha });
   await stack.setConfig("image_uri", { value: imageUri })
-  await stack.setConfig("gcp_location", { value: gcpLocation })
+  // await stack.setConfig("gcp_location", { value: gcpLocation })
 }
 
 run().catch(function onRunError(error) {

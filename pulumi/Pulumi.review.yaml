@@ -1,3 +1,4 @@
 config:
   gcp:project: expapp-pulumi
+  gcp:region: us-west1
   pulumi:template: gcp-javascript
