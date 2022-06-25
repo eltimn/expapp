@@ -41,6 +41,19 @@ jobs:
         with:
           pulumi-version: ^3.0.0
 
+      - name: start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ github.token }}
+          env: review
+          payload: >-
+            {
+              "action": "${{ github.event.action }}",
+              "label": "${{ steps.slugify.outputs.branch }}"
+            }
+
       - name: Create stack
         run: node create-stack.js
         working-directory: ./pulumi/scripts
@@ -63,37 +76,6 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-      # - id: 'deploy'
-      #   uses: 'google-github-actions/deploy-cloudrun@v0'
-      #   with:
-      #     service: 'expapp-${{ steps.slugify.outputs.branch }}'
-      #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
-
-
-      # - name: 'Setup gcloud SDK'
-      #   uses: google-github-actions/setup-gcloud@v0
-      #   with:
-      #     install_components: 'beta'
-
-      # - name: 'Allow public access'
-      #   run: |-
-      #     gcloud beta run services add-iam-policy-binding \
-      #       --region=us-central1 \
-      #       --member=allUsers \
-      #       --role=roles/run.invoker \
-      #       expapp-${{ steps.slugify.outputs.branch }}
-
-      # - name: 'Deploy to Cloud Run'
-      #   id: deploy
-      #   run: |-
-      #     gcloud run deploy expapp-${{ steps.slugify.outputs.branch }} \
-      #       --region us-central1 \
-      #       --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }} \
-      #       --platform managed \
-      #       --allow-unauthenticated \
-      #       --quiet
-
-
       - name: 'Use output'
         run: 'curl "${{ steps.deploy.outputs.url }}"'
 
@@ -103,31 +85,18 @@ jobs:
       #   run: |
       #     echo "::set-output name=domain::${{ env.GITHUB_HEAD_REF_SLUG_URL }}.my-app.com"
 
-      # - name: start deployment
-      #   uses: bobheadxi/deployments@v1
-      #   id: deployment
-      #   with:
-      #     step: start
-      #     token: ${{ github.token }}
-      #     env: review
-      #     payload: >-
-      #       {
-      #         "action": "${{ github.event.action }}",
-      #         "label": "${{ env.GITHUB_HEAD_REF_SLUG_URL }}"
-      #       }
-
       # - name: Echo inputs
       #   run: |
       #     echo "Ref Name: ${{ github.ref_name }}"
       #     echo "Environment: ${{ github.event.inputs.environment }}"
 
-      # - name: update deployment status
-      #   uses: bobheadxi/deployments@v1
-      #   if: always()
-      #   with:
-      #     step: finish
-      #     token: ${{ github.token }}
-      #     status: ${{ job.status }}
-      #     env: ${{ steps.deployment.outputs.env }}
-      #     deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      #     env_url: https://${{ steps.set-domain.outputs.domain }}
+      - name: update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ github.token }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ steps.deploy.outputs.url }}
