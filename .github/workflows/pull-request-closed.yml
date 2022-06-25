@@ -63,6 +63,7 @@ jobs:
   cleanup:
     name: Cleanup docker images
     runs-on: ubuntu-latest
+    needs: destroy
     steps:
       # - uses: actions/checkout@v2
 
