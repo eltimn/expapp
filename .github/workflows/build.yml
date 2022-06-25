@@ -55,9 +55,9 @@ jobs:
         with:
           context: .
           push: true
-          tags:
-            - ${{ secrets.DOCKER_REGISTRY }}/${{ inputs.image_name }}:${{ inputs.tag }}
-            - ${{ secrets.DOCKER_REGISTRY }}/${{ inputs.image_name }}:latest
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/${{ inputs.image_name }}:${{ inputs.tag }}
+            ${{ secrets.DOCKER_REGISTRY }}/${{ inputs.image_name }}:latest
 
       # - name: Image digest
       #   run: echo ${{ steps.docker_build.outputs.digest }}
