@@ -11,8 +11,7 @@ jobs:
   build_setup:
     runs-on: ubuntu-latest
     outputs:
-      git_branch: ${{ steps.slugify.outputs.branch }}
-      git_sha: ${{ steps.slugify.outputs.sha }}
+      sha: ${{ steps.slugify.outputs.sha }}
     steps:
       - uses: actions/checkout@v3
       - id: slugify
