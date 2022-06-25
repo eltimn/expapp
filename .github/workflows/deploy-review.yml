@@ -47,7 +47,7 @@ jobs:
         env:
           STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
           # GCP_LOCATION: "us-central1"
-          # GCP_REGION: "us-west1"
+          GCP_REGION: "us-west1"
           # GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
           # GIT_SHA: ${{ steps.slugify.outputs.sha }}
           IMAGE_URI: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
