@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   workflow_call:
 
+env:
+  REGISTRY: us-docker.pkg.dev/expapp-pulumi/expapp
+  IMAGE_NAME: expapp
+  # REGISTRY: ghcr.io
+  # IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   deploy:
     permissions:
@@ -11,6 +17,7 @@ jobs:
       contents: read
       id-token: write
     runs-on: ubuntu-latest
+    environment: review
     steps:
       - uses: actions/checkout@v2
 
@@ -38,10 +45,16 @@ jobs:
         run: node create-stack.js
         working-directory: ./pulumi/scripts
         env:
-          PR_STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
+          STACK_NAME: "review-${{ steps.slugify.outputs.branch }}"
+          # GCP_LOCATION: "us-central1"
+          GCP_REGION: "us-west1"
+          # GIT_BRANCH: ${{ steps.slugify.outputs.branch }}
+          # GIT_SHA: ${{ steps.slugify.outputs.sha }}
+          IMAGE_URI: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Deploy stack
+        id: 'deploy'
         uses: pulumi/actions@v3
         with:
           command: up
@@ -50,15 +63,39 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-
       # - id: 'deploy'
       #   uses: 'google-github-actions/deploy-cloudrun@v0'
       #   with:
-      #     service: 'hello-cloud-run'
-      #     image: 'gcr.io/cloudrun/hello'
+      #     service: 'expapp-${{ steps.slugify.outputs.branch }}'
+      #     image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
 
-      # - name: 'Use output'
-      #   run: 'curl "${{ steps.deploy.outputs.url }}"'
+
+      # - name: 'Setup gcloud SDK'
+      #   uses: google-github-actions/setup-gcloud@v0
+      #   with:
+      #     install_components: 'beta'
+
+      # - name: 'Allow public access'
+      #   run: |-
+      #     gcloud beta run services add-iam-policy-binding \
+      #       --region=us-central1 \
+      #       --member=allUsers \
+      #       --role=roles/run.invoker \
+      #       expapp-${{ steps.slugify.outputs.branch }}
+
+      # - name: 'Deploy to Cloud Run'
+      #   id: deploy
+      #   run: |-
+      #     gcloud run deploy expapp-${{ steps.slugify.outputs.branch }} \
+      #       --region us-central1 \
+      #       --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }} \
+      #       --platform managed \
+      #       --allow-unauthenticated \
+      #       --quiet
+
+
+      - name: 'Use output'
+        run: 'curl "${{ steps.deploy.outputs.url }}"'
 
 
       # - name: Set domain

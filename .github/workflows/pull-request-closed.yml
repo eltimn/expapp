@@ -1,0 +1,94 @@
+name: Pull Request Closed
+
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  # REGISTRY: ghcr.io
+  # IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: expapp
+
+jobs:
+  destroy:
+    name: Destroy Pulumi Stack and Resources
+    # if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment: review
+    steps:
+      - uses: actions/checkout@v2
+
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - run: npm install
+        working-directory: ./pulumi
+
+      - name: Install pulumi
+        uses: pulumi/setup-pulumi@v2
+        with:
+          pulumi-version: ^3.0.0
+
+      - name: Check stack exists
+        run: node stack-exists.js
+        working-directory: ./pulumi/scripts
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - uses: pulumi/actions@v3
+        continue-on-error: true
+        with:
+          command: destroy
+          stack-name: "review-${{ steps.slugify.outputs.branch }}"
+          work-dir: ./pulumi
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - run: pulumi stack rm "review-${{ steps.slugify.outputs.branch }}" --yes
+        continue-on-error: true
+        working-directory: ./pulumi
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  # cleanup:
+  #   name: Cleanup docker images
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - id: slugify
+  #       uses: eltimn/slugify-action@v1.5
+
+      # - name: Login to Github Packages
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ${{ env.REGISTRY }}
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - run: echo "env.IMAGE_NAME - ${{ env.IMAGE_NAME }}"
+
+      # - name: Set up Docker Buildx
+      #   id: buildx
+      #   uses: docker/setup-buildx-action@v1
+
+      # - name: Remove docker images
+      #   run: docker image rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.slugify.outputs.branch }}
+
+      # TODO: try with an organization
+      # - name: Delete image
+      #   uses: bots-house/ghcr-delete-image-action@v1.0.0
+      #   with:
+      #     owner: ${{ github.repository_owner }}
+      #     name: ${{ env.IMAGE_NAME }}
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag: ${{ steps.slugify.outputs.branch }}

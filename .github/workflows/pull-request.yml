@@ -11,29 +11,62 @@ jobs:
 
   build:
     uses: ./.github/workflows/build.yml
+    with:
+      registry: us-docker.pkg.dev/expapp-pulumi/expapp
+      image_name: expapp
+    secrets:
+      GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
 
-  preview:
-    name: Preview staging
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
+  # stack_exists:
+  #   runs-on: ubuntu-latest
+  #   environment: review
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: 'Authenticate to Google Cloud'
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+  #     - id: slugify
+  #       uses: eltimn/slugify-action@v1.5
 
-      - run: npm install
-        working-directory: ./pulumi
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
 
-      - uses: pulumi/actions@v3
-        with:
-          command: preview
-          stack-name: staging
-          work-dir: ./pulumi
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  #     - run: npm install
+  #       working-directory: ./pulumi
+
+  #     - name: Install pulumi
+  #       uses: pulumi/setup-pulumi@v2
+  #       with:
+  #         pulumi-version: ^3.0.0
+
+  #     - name: Check stack exists
+  #       run: node stack-exists.js
+  #       working-directory: ./pulumi/scripts
+  #       env:
+  #         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  # preview:
+  #   name: Preview staging
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   environment: staging
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 16
+
+  #     - name: 'Authenticate to Google Cloud'
+  #       uses: google-github-actions/auth@v0
+  #       with:
+  #         credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+  #     - run: npm install
+  #       working-directory: ./pulumi
+
+  #     - uses: pulumi/actions@v3
+  #       with:
+  #         command: preview
+  #         stack-name: staging
+  #         work-dir: ./pulumi
+  #       env:
+  #         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
