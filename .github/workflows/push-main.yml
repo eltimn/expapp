@@ -8,13 +8,24 @@ jobs:
   test:
     uses: ./.github/workflows/test.yml
 
+  build_setup:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.slugify.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
+
   build:
     uses: ./.github/workflows/build.yml
+    needs: build_setup
     with:
-      registry: us-docker.pkg.dev/expapp-pulumi/expapp
-      image_name: expapp
+      image_name: expapp-main
+      tag: ${{ needs.build_setup.outputs.sha }}
     secrets:
       GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
 
   deploy_staging:
     uses: ./.github/workflows/deploy-staging.yml

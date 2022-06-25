@@ -2,3 +2,5 @@ config:
   gcp:project: expapp-production
   gcp:region: us-east4
   pulumi:template: gcp-javascript
+  expapp:image_uri: us-docker.pkg.dev/expapp-pulumi/expapp/expapp-main:latest
+  expapp:service_name: expapp-production

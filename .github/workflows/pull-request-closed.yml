@@ -60,14 +60,26 @@ jobs:
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
-  # cleanup:
-  #   name: Cleanup docker images
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
+  cleanup:
+    name: Cleanup docker images
+    runs-on: ubuntu-latest
+    needs: destroy
+    steps:
+      # - uses: actions/checkout@v2
 
-  #     - id: slugify
-  #       uses: eltimn/slugify-action@v1.5
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
+
+      - name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GAR_JSON_KEY }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: 'Delete Images'
+        run: 'gcloud artifacts docker images delete "${{ secrets.DOCKER_REGISTRY }}/expapp-${{ steps.slugify.outputs.branch }}" --delete-tags'
 
       # - name: Login to Github Packages
       #   uses: docker/login-action@v1
