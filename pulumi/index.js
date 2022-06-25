@@ -3,16 +3,16 @@
 const pulumi = require("@pulumi/pulumi");
 const gcp = require("@pulumi/gcp");
 
-// // required config values
+// config values
 const config = new pulumi.Config();
 // // const branch = config.require("git_branch");
 // // const sha = config.require("git_sha");
 const image_uri = config.require("image_uri");
-// const location = config.require("gcp_location");
 
 // Location to deploy Cloud Run services
 const region = gcp.config.region || "us-central1";
 
+// The cloud run service
 const appService = new gcp.cloudrun.Service("expapp", {
   location: region,
   template: {
@@ -32,7 +32,7 @@ const appService = new gcp.cloudrun.Service("expapp", {
   traffics: [{ percent: 100, latestRevision: true }],
 });
 
-// allow all users accesss to service
+// allow all users access to service
 new gcp.cloudrun.IamMember("expapp-all-users", {
   service: appService.name,
   location: appService.location,
@@ -40,18 +40,7 @@ new gcp.cloudrun.IamMember("expapp-all-users", {
   member: "allUsers"
 });
 
-// appService.statuses[0].url.apply(v => console.log('url:', v))
-
-// // Create a GCP resource (Storage Bucket)
-// // const bucket = new gcp.storage.Bucket("my-bucket", {
-// //     location: "US"
-// // });
-
-// // Exports
-// exports.readme = appService.status.url;
+// Exports
 exports.url = appService.statuses[0].url;
-exports.image_uri = image_uri;
-exports.region = region;
-// // exports.region = region;
-// // exports.branch = branch;
-// // exports.sha = sha;
+// exports.image_uri = image_uri;
+// exports.region = region;
