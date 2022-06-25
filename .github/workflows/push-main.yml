@@ -22,11 +22,11 @@ jobs:
     uses: ./.github/workflows/build.yml
     needs: build_setup
     with:
-      registry: ${{ secrets.DOCKER_REGISTRY }}
       image_name: expapp-main
       tag: ${{ needs.build_setup.outputs.sha }}
     secrets:
       GAR_JSON_KEY: ${{ secrets.GAR_JSON_KEY }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
 
   deploy_staging:
     uses: ./.github/workflows/deploy-staging.yml
