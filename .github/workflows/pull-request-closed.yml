@@ -79,7 +79,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v0'
 
       - name: 'Delete Images'
-        run: 'gcloud artifacts docker images delete "${{ secrets.DOCKER_REGISTRY }}/expapp-${{ slugify.outputs.branch }}" --delete-tags'
+        run: 'gcloud artifacts docker images delete "${{ secrets.DOCKER_REGISTRY }}/expapp-${{ steps.slugify.outputs.branch }}" --delete-tags'
 
       # - name: Login to Github Packages
       #   uses: docker/login-action@v1
