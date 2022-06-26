@@ -2,8 +2,8 @@
   "name": "expapp",
   "main": "index.js",
   "dependencies": {
-    "@pulumi/gcp": "^6.27.0",
-    "@pulumi/pulumi": "^3.34.1"
+    "@pulumi/gcp": "^6.28.0",
+    "@pulumi/pulumi": "^3.35.1"
   },
   "devDependencies": {
     "eslint": "^8.18.0",
