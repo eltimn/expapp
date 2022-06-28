@@ -17,6 +17,12 @@
 * Cloud Run Admin
 * Service Account User
 
+## Github Secrets
+
+* GOOGLE_CREDENTIALS - service account key in JSON format
+* DOCKER_REGISTRY - location of GAR repo
+* PULUMI_ACCESS_TOKEN
+* DISCORD_WEBHOOK_URL
 
 ## References
 
@@ -28,6 +34,7 @@
 
 * Production environment/deploy
 * Use custom DNS for Cloud Run apps
+* Check stack exists (stack manager github action)
 * Cleanup outdated main images
 * Use a specific Service Account for the Cloud Run Service
-* Check stack exists (stack manager github action)
+

@@ -1,0 +1,67 @@
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    permissions:
+      deployments: write
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v2
+
+      - id: slugify
+        uses: eltimn/slugify-action@v1.5
+
+      - name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - run: npm install
+        working-directory: ./pulumi
+
+      - name: Start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ github.token }}
+          env: review
+          payload: >-
+            {
+              "action": "${{ github.event.action }}",
+              "label": "${{ steps.slugify.outputs.branch }}"
+            }
+
+      - name: Deploy stack
+        id: 'deploy'
+        uses: pulumi/actions@v3
+        with:
+          command: up
+          stack-name: production
+          work-dir: ./pulumi
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+      - name: Update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ github.token }}
+          status: ${{ job.status }}
+          env: ${{ steps.deployment.outputs.env }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ steps.deploy.outputs.url }}
+
+      - name: 'URL'
+        run: 'curl "${{ steps.deploy.outputs.url }}/health"'
