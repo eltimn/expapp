@@ -27,6 +27,7 @@
 ## TODO
 
 * Production environment/deploy
+* Use custom DNS for Cloud Run apps
 * Cleanup outdated main images
 * Use a specific Service Account for the Cloud Run Service
 * Check stack exists (stack manager github action)
