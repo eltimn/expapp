@@ -4,3 +4,4 @@ config:
   pulumi:template: gcp-javascript
   expapp:image_uri: us-docker.pkg.dev/expapp-pulumi/expapp/expapp-main:latest
   expapp:service_name: expapp-staging
+  expapp:domain_main: staging.eddasoftware.com

@@ -10,6 +10,7 @@ async function run() {
   // const gitSha = process.env.GIT_SHA
   const imageUri = process.env.IMAGE_URI
   const serviceName = process.env.SERVICE_NAME
+  const domainMain = process.env.DOMAIN_MAIN
 
   const stackArgs = {
     stackName: process.env.STACK_NAME,
@@ -40,6 +41,7 @@ async function run() {
   // await stack.setConfig("git_sha", { value: gitSha })
   await stack.setConfig('image_uri', { value: imageUri })
   await stack.setConfig('service_name', { value: serviceName })
+  await stack.setConfig('domain_main', { value: domainMain })
   // await stack.setConfig("gcp_location", { value: gcpLocation })
 }
 
