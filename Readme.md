@@ -2,6 +2,7 @@
 
 * Artifact Registry API
 * Cloud Run API
+* Cloud DNS API
 
 # Github Actions & Pulumi
 
@@ -32,8 +33,7 @@
 
 ## TODO
 
-* Production environment/deploy
-* Use custom DNS for Cloud Run apps
+* Use custom DNS for Cloud Run apps (load balancer)
 * Check stack exists (stack manager github action)
 * Cleanup outdated main images
 * Use a specific Service Account for the Cloud Run Service
