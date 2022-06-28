@@ -22,3 +22,5 @@ https://github.com/marketplace/google-cloud-build
 ## References
 
 * https://qasimalbaqali.medium.com/deploy-a-stack-on-every-pull-request-using-pulumi-and-github-actions-d5dbfa8946f6
+* https://ardalis.com/integrate-github-and-discord-with-webhooks/
+* https://medium.com/develop-everything/create-a-cloud-run-service-and-https-load-balancer-with-pulumi-3ba542e60367
