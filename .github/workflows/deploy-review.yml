@@ -65,6 +65,7 @@ jobs:
           # GIT_SHA: ${{ steps.slugify.outputs.sha }}
           IMAGE_URI: ${{ secrets.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}-${{ steps.slugify.outputs.branch }}:${{ steps.slugify.outputs.sha }}
           SERVICE_NAME: expapp-${{ steps.slugify.outputs.branch }}
+          DOMAIN_MAIN: ${{ steps.slugify.outputs.branch }}.eddasoftware.com
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Deploy stack

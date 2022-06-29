@@ -10,6 +10,6 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
-    semi: 'never',
-  }
+    semi: ['error', 'never'],
+  },
 }

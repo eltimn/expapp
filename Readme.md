@@ -2,6 +2,8 @@
 
 * Artifact Registry API
 * Cloud Run API
+* Cloud DNS API
+* Compute Engine API
 
 # Github Actions & Pulumi
 
@@ -29,11 +31,11 @@
 * https://qasimalbaqali.medium.com/deploy-a-stack-on-every-pull-request-using-pulumi-and-github-actions-d5dbfa8946f6
 * https://ardalis.com/integrate-github-and-discord-with-webhooks/
 * https://medium.com/develop-everything/create-a-cloud-run-service-and-https-load-balancer-with-pulumi-3ba542e60367
+* https://www.pulumi.com/registry/packages/gcp/api-docs/compute/managedsslcertificate/
 
 ## TODO
 
-* Production environment/deploy
-* Use custom DNS for Cloud Run apps
+* Use custom DNS for Cloud Run apps (load balancer)
 * Check stack exists (stack manager github action)
 * Cleanup outdated main images
 * Use a specific Service Account for the Cloud Run Service
