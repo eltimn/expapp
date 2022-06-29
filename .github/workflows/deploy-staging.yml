@@ -64,5 +64,5 @@ jobs:
           deployment_id: ${{ steps.deployment.outputs.deployment_id }}
           env_url: ${{ steps.deploy.outputs.url }}
 
-      - name: 'URL'
-        run: 'curl "${{ steps.deploy.outputs.url }}/health"'
+      # - name: 'URL'
+      #   run: 'curl "${{ steps.deploy.outputs.url }}/health"'
