@@ -95,9 +95,13 @@ const targetHttpsProxy = new gcp.compute.TargetHttpsProxy(`${serviceName}-target
   sslCertificates: [managedSslCertificate.id],
 })
 
+// Static IP address
+const globalAddress = new gcp.compute.GlobalAddress(`${serviceName}-address`, {})
+
 const globalForwardingRule = new gcp.compute.GlobalForwardingRule(`${serviceName}-global-forwarding-rule`, { // eslint-disable-line no-unused-vars
   target: targetHttpsProxy.id,
   portRange: '443',
+  ipAddress: globalAddress.id,
 })
 
 const dnsZone = gcp.dns.getManagedZone({ name: dnsZoneName })
