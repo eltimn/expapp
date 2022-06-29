@@ -6,12 +6,11 @@
 * Compute Engine API
 * Identity and Access Management (IAM) API
 
-# Github Actions & Pulumi
+## GCP
 
-## Pulumi
-
-* Create GCP service account for deploying via Pulumi. Add to secrets on Github.
-* Create Pulumi access token. Add to secrets on Github.
+* Manually create DNS zone
+* Manually create service account for deploying via Pulumi
+* Manually create Artifact Registry repo
 
 ## GCP Service Account Permissions
 
@@ -23,6 +22,11 @@
 * Service Account Admin (roles/iam.serviceAccountAdmin))
 * Service Account Token Creator (roles/iam.serviceAccountTokenCreator)
 * Service Account User (roles/iam.serviceAccountUser)
+
+## Pulumi
+
+* Create Pulumi account & organization
+* Create Pulumi access token
 
 ## Github Secrets
 
