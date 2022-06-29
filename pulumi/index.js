@@ -12,8 +12,14 @@ const imageUri = config.require('image_uri')
 const serviceName = config.require('service_name')
 const domainMain = config.require('domain_main')
 
-// Location to deploy Cloud Run services
+// Location to deploy to
 const region = gcp.config.region || 'us-central1'
+
+// service account to run the service as
+const serviceAccount = new gcp.serviceaccount.Account(`${serviceName}-svc-acct`, {
+  accountId: `${serviceName}-svc-acct`,
+  displayName: `${serviceName} Service Account`,
+})
 
 // The cloud run service
 const appService = new gcp.cloudrun.Service(serviceName, {
@@ -30,6 +36,7 @@ const appService = new gcp.cloudrun.Service(serviceName, {
           },
         },
       }],
+      serviceAccountName: serviceAccount.email,
     },
   },
   traffics: [{ percent: 100, latestRevision: true }],

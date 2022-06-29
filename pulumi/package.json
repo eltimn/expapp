@@ -2,7 +2,8 @@
   "name": "expapp",
   "main": "index.js",
   "dependencies": {
-    "@pulumi/gcp": "^6.28.0",
+    "@pulumi/gcp": "^6.29.0",
+    "@pulumi/google-native": "^0.20.0",
     "@pulumi/pulumi": "^3.35.1"
   },
   "devDependencies": {

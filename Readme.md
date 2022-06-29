@@ -4,20 +4,29 @@
 * Cloud Run API
 * Cloud DNS API
 * Compute Engine API
+* Identity and Access Management (IAM) API
 
-# Github Actions & Pulumi
+## GCP
 
-## Pulumi
-
-* Create GCP service account for deploying via Pulumi. Add to secrets on Github.
-* Create Pulumi access token. Add to secrets on Github.
+* Manually create DNS zone
+* Manually create service account for deploying via Pulumi
+* Manually create Artifact Registry repo
 
 ## GCP Service Account Permissions
 
-* Artifact Registry Administrator
-* Service Account Token Creator
-* Cloud Run Admin
-* Service Account User
+* Artifact Registry Administrator (roles/artifactregistry.admin)
+* Cloud Run Admin (roles/run.admin)
+* Compute Load Balancer Admin (roles/compute.loadBalancerAdmin)
+* Compute Network Admin (roles/compute.networkAdmin)
+* DNS Administrator (roles/dns.admin)
+* Service Account Admin (roles/iam.serviceAccountAdmin))
+* Service Account Token Creator (roles/iam.serviceAccountTokenCreator)
+* Service Account User (roles/iam.serviceAccountUser)
+
+## Pulumi
+
+* Create Pulumi account & organization
+* Create Pulumi access token
 
 ## Github Secrets
 
@@ -35,8 +44,6 @@
 
 ## TODO
 
-* Use custom DNS for Cloud Run apps (load balancer)
+* Static IP
 * Check stack exists (stack manager github action)
 * Cleanup outdated main images
-* Use a specific Service Account for the Cloud Run Service
-
