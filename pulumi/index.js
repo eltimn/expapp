@@ -111,7 +111,7 @@ const dnsSet = new gcp.dns.RecordSet(`${serviceName}-dns-set`, { // eslint-disab
   type: 'A',
   ttl: 3600,
   managedZone: dnsZone.then((zone) => zone.name),
-  rrdatas: [globalForwardingRule.ipAddress],
+  rrdatas: [globalAddress.address],
 })
 
 // Exports
