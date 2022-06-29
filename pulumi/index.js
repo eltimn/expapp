@@ -1,6 +1,9 @@
 const pulumi = require('@pulumi/pulumi')
 const gcp = require('@pulumi/gcp')
 
+// const serviceName = 'expapp'
+const dnsZoneName = 'expapp-zone'
+
 // config values
 const config = new pulumi.Config()
 // // const branch = config.require("git_branch");
@@ -40,64 +43,70 @@ new gcp.cloudrun.IamMember(`${serviceName}-all-users`, { // eslint-disable-line 
   member: 'allUsers',
 })
 
-// // setup the load balancer
-// const defaultManagedSslCertificate = new gcp.compute.ManagedSslCertificate('defaultManagedSslCertificate', {
-//   managed: {
-//     domains: ['sslcert.tf-test.club.'],
-//   },
-// })
+// setup the load balancer
+const regionNetworkEndpointGroup = new gcp.compute.RegionNetworkEndpointGroup(`${serviceName}-neg`, {
+  networkEndpointType: 'SERVERLESS',
+  name: serviceName,
+  region: appService.location,
+  cloudRun: {
+    service: appService.name,
+  },
+})
 
-// const defaultHttpHealthCheck = new gcp.compute.HttpHealthCheck('defaultHttpHealthCheck', {
-//   requestPath: '/health',
-//   checkIntervalSec: 1,
-//   timeoutSec: 1,
-// })
+const managedSslCertificate = new gcp.compute.ManagedSslCertificate(`${serviceName}-managed-ssl`, {
+  managed: {
+    domains: [`${domainMain}.`],
+  },
+})
 
-// const defaultBackendService = new gcp.compute.BackendService('defaultBackendService', {
-//   portName: 'http',
-//   protocol: 'HTTP',
-//   timeoutSec: 10,
-//   healthChecks: [defaultHttpHealthCheck.id],
-// })
+const backendService = new gcp.compute.BackendService(`${serviceName}-backend-service`, {
+  portName: 'http',
+  protocol: 'HTTP',
+  loadBalancingScheme: 'EXTERNAL',
+  backends: [{ group: regionNetworkEndpointGroup.id }],
+})
 
-// const defaultURLMap = new gcp.compute.URLMap('defaultURLMap', {
-//   description: 'Expapp URL map',
-//   defaultService: defaultBackendService.id,
-//   hostRules: [{
-//     hosts: ['sslcert.tf-test.club'],
-//     pathMatcher: 'allpaths',
-//   }],
-//   pathMatchers: [{
-//     name: 'allpaths',
-//     defaultService: defaultBackendService.id,
-//     pathRules: [{
-//       paths: ['/*'],
-//       service: defaultBackendService.id,
-//     }],
-//   }],
-// })
+const urlMap = new gcp.compute.URLMap(`${serviceName}-url-map`, {
+  description: `${serviceName} URL map`,
+  defaultService: backendService.id,
+  hostRules: [{
+    hosts: [domainMain],
+    pathMatcher: 'allpaths',
+  }],
+  pathMatchers: [{
+    name: 'allpaths',
+    defaultService: backendService.id,
+    pathRules: [{
+      paths: ['/*'],
+      service: backendService.id,
+    }],
+  }],
+})
 
-// const defaultTargetHttpsProxy = new gcp.compute.TargetHttpsProxy('defaultTargetHttpsProxy', {
-//   urlMap: defaultURLMap.id,
-//   sslCertificates: [defaultManagedSslCertificate.id],
-// })
+const targetHttpsProxy = new gcp.compute.TargetHttpsProxy(`${serviceName}-target-https-proxy`, {
+  urlMap: urlMap.id,
+  sslCertificates: [managedSslCertificate.id],
+})
 
-// const zone = new gcp.dns.ManagedZone('zone', { dnsName: 'sslcert.tf-test.club.' })
-// const defaultGlobalForwardingRule = new gcp.compute.GlobalForwardingRule('defaultGlobalForwardingRule', {
-//   target: defaultTargetHttpsProxy.id,
-//   portRange: '443',
-// })
+const globalForwardingRule = new gcp.compute.GlobalForwardingRule(`${serviceName}-global-forwarding-rule`, { // eslint-disable-line no-unused-vars
+  target: targetHttpsProxy.id,
+  portRange: '443',
+})
 
-// const set = new gcp.dns.RecordSet('set', {
-//   name: 'sslcert.tf-test.club.',
-//   type: 'A',
-//   ttl: 3600,
-//   managedZone: zone.name,
-//   rrdatas: [defaultGlobalForwardingRule.ipAddress],
-// })
+const dnsZone = gcp.dns.getManagedZone({ name: dnsZoneName })
+
+const dnsSet = new gcp.dns.RecordSet(`${serviceName}-dns-set`, { // eslint-disable-line no-unused-vars
+  name: `${domainMain}.`,
+  type: 'A',
+  ttl: 3600,
+  managedZone: dnsZone.then((zone) => zone.name),
+  rrdatas: [globalForwardingRule.ipAddress],
+})
 
 // Exports
-exports.url = appService.statuses[0].url
-exports.domainMain = domainMain
+exports.url = `https://${domainMain}`
+// exports.url = appService.statuses[0].url
+// exports.domainMain = domainMain
+// exports.ip = globalForwardingRule.ipAddress
 // exports.image_uri = image_uri;
 // exports.region = region;
