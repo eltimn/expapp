@@ -2,12 +2,12 @@
   "name": "expapp",
   "main": "index.js",
   "dependencies": {
-    "@pulumi/gcp": "^6.29.0",
-    "@pulumi/google-native": "^0.20.0",
-    "@pulumi/pulumi": "^3.35.1"
+    "@pulumi/gcp": "^6.34.0",
+    "@pulumi/google-native": "^0.23.0",
+    "@pulumi/pulumi": "^3.38.0"
   },
   "devDependencies": {
-    "eslint": "^8.18.0",
+    "eslint": "^8.22.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0"
   }
